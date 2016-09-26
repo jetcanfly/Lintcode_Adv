@@ -1,7 +1,7 @@
 # Chapter 1 - Follow up in Coding Interview
 ## Lecture
 - PPT
-[Chapter1/1._SeniorAlgorithm_Crack_IT_company.pptx2.pdf](Chapter1/1._SeniorAlgorithm_Crack_IT_company.pptx2.pdf)
+[1._SeniorAlgorithm_Crack_IT_company.pptx2.pdf](1._SeniorAlgorithm_Crack_IT_company.pptx2.pdf)
 - Video https://www.dropbox.com/s/rk573bus2rrxojw/Chapter1.mov?dl=0
 
 

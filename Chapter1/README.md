@@ -19,7 +19,7 @@ Two pointers
 (382)Triangle Count | [*LintCode*](http://www.lintcode.com/en/problem/triangle-count/) - [*Solution*](http://www.jiuzhang.com/solutions/triangle-count/) - [*File*](382_triangle-count.java) |  | reduce to Two Sum II
 
 ### Kth Smallest Number in Sorted Matrix
-见到集合求Min/Max就要想到堆
+见到集合求Min/Max就要想到堆(heap/priority queue)
 
 练习题目 | Links | Video  | Note
 :----------|:-----: | :---: | :---:

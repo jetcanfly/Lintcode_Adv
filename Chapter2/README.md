@@ -1,184 +1,179 @@
-# Chapter 2 - Data Structure I
-## Lecture
-- PPT
-[2._data_structure_1._2016.04.03.pdf](2._data_structure_1._2016.04.03.pdf)
-- Video https://www.dropbox.com/s/g8q7xz2rto4wcu5/Chaper2_Data_Structure_I.mov?dl=0
+# Chapter 2 数据结构(上)
 
+## Union Find 并查集
 
-### Union Find
-并查集
+一种用来解决集合查询合并的数据结构
+支持 `O(1)` find / `O(1)` union
 
-一种用来解决**集合查询**合并的数据结构
+**考点**
 
-支持O(1)find/O(1)union
+- 关于集合合并
+- 判断在不在同一个集合中
 
-Template
+**模板**
 ```java
 class UnionFind<T> {
-    /* Key: Node, Value: Father (Boss) */
-    HashMap<T, T> father = new HashMap<T, T>();
-    UnionFind() {}
 
-    UnionFind(HashSet<T> set) {
-        for (T now : set) {
-            father.put(now, now);
+    private Map<T, T> father = new HashMap<>();
+
+    // Initialization: every one is its own father
+    public UnionFind(Set<T> set) {
+        for (T v : set) {
+            father.put(v, v);
         }
     }
 
-    /* O(n) time */
-    T find(T x) {   
+    public T find(T x) {
         T parent = x;
-        while (parent != father.get(parent)) {
-            parent = father.get(parent);
+        while (parent != father.get(x)) {
+            parent = father.get(x);
         }
         return parent;
     }
 
-    void union(T x, T y) {
-        T fa_x = find(x);
-        T fa_y = find(y);
-        if (fa_x != fa_y) {
-            father.put(fa_x, fa_y);
-        }
-    }
-
-    /* O(1) time */
-    T compressed_find(T x) {
+    // 均摊时间复杂度 O(1)
+    public T compress_find(T x) {
+        // find x's father
         T parent = x;
-        while (parent != father.get(parent)) {
-            parent = father.get(parent);
+        while (parent != father.get(x)) {
+            parent = father.get(x);
         }
 
-        while (x != father.get(x)) {
+        // Update the father along the path
+        while (parent != x) {
             T next = father.get(x);
             father.put(x, parent);
             x = next;
         }
+
         return parent;
     }
 
-    void compressed_union(T x, T y) {
-        T fa_x = compressed_find(x);
-        T fa_y = compressed_find(y);
-        if (fa_x != fa_y) {
-            father.put(fa_x, fa_y);
+    // 均摊时间复杂度 O(1)
+    public void union(T x, T y) {
+        // Find the father for each
+        T fax = compress_find(x);
+        T fay = compress_find(y);
+
+        // Union
+        if (fax != fay) {
+            father.put(fax, fay);
         }
     }
 }
 ```
 
-练习题目 | Links | Video  | Note
-:----------|:-----: | :---: | :---:
-(431)Find the Connected Component in the Undirected Graph | [*LintCode*](http://www.lintcode.com/en/problem/find-the-connected-component-in-the-undirected-graph/) - [*Solution*](http://www.jiuzhang.com/solutions/find-the-connected-component-in-the-undirected-graph/) - [*File*](431_find-the-connected-component-in-the-undirected-graph.java) |  | 强连通块: 无向图一个块中节点你找得到我，我也找得到你
-(432)Find the Weak Connected Component in the Directed Graph | [*LintCode*](http://www.lintcode.com/en/problem/find-the-weak-connected-component-in-the-directed-graph/) - [*Solution*](http://www.jiuzhang.com/solutions/find-the-weak-connected-component-in-the-directed-graph/) - [*File*](432_find-the-weak-connected-component-in-the-directed-graph.java) |  | 弱连通块: 有向图一个块中，你找得到我，我可以找不到你
-(433)Number of Islands | [*LintCode*](http://www.lintcode.com/en/problem/number-of-islands/) - [*Solution*](http://www.jiuzhang.com/solutions/number-of-islands/) - [*File*](433_number-of-islands.java) |  |
-(433)Number of Islands II | [*LintCode*](http://www.lintcode.com/en/problem/number-of-islands-ii/) - [*Solution*](http://www.jiuzhang.com/solutions/number-of-islands-ii/) - [*File*](434_number-of-islands-ii.java) |  |
-(178)Graph Valid Tree | [*LintCode*](http://www.lintcode.com/en/problem/graph-valid-tree/) - [*Solution*](http://www.jiuzhang.com/solutions/graph-valid-tree/) - [*File*](178_graph-valid-tree.java) |  |
-(477)Surrounded Regions | [*LintCode*](http://www.lintcode.com/en/problem/surrounded-regions/) - [*Solution*](http://www.jiuzhang.com/solutions/surrounded-regions/) - [*File*](477_surrounded-regions.java) |  |
+**题目**
+
+- Find the Connected Component in the Undirected Graph
+- Find the Weak Connected Component in the Directed Graph
+- Number of Islands II
+- Graph Valid Tree
+- Surrounded Regions
 
 
-### Trie
+## Trie 字典树
+
+**Hash vs Trie**
+
+什么样的题目适合Trie?
+
 - 一个一个字符串遍历
-- 需要节约空间
+- 需要节省空间
 - 查找前缀
 
+
+**模板**
 ```java
-/**
- * Your Trie object will be instantiated and called as such:
- * Trie trie = new Trie();
- * trie.insert("lintcode");
- * trie.search("lint"); will return false
- * trie.startsWith("lint"); will return true
- */
-class TrieNode {
-
-    HashMap<Character, TrieNode> children = new HashMap<Character, TrieNode>();
-    char c;
-    String s;   // The word generated from root. isString is True
-    boolean isString;
-
-    public TrieNode() {}
-
-    public TrieNode(char c) {
-        this.c = c;
-    }
-}
-
 class Trie {
-    TrieNode root;
+    private TrieNode root = new TrieNode();
 
-    public Trie() {
-        root = new TrieNode();
-    }
-
-    // Inserts a word into the trie.
     public void insert(String word) {
         TrieNode curr = root;
-        HashMap<Character, TrieNode> currChildren = curr.children;
-        char[] wordArr = word.toCharArray();
-        for (int i = 0; i < wordArr.length; i++) {
-            char c = wordArr[i];
-            if (currChildren.containsKey(c)) {
-                curr = currChildren.get(c);
-            } else {
-                TrieNode newNode = new TrieNode(c);
-                currChildren.put(c, newNode);
-                curr = newNode;
-            }
-            currChildren = curr.children;
+
+        for (char c : word.toCharArray()) {
+            curr.children.putIfAbsent(c, new TrieNode(c));
+            curr = curr.children.get(c);
         }
-        curr.isString = true;
-        curr.s = word;
+
+        curr.isWord = true;
     }
 
-    // Returns if the word is in the trie.
     public boolean search(String word) {
-        TrieNode pos = searchWordNodePos(word);
-        if (pos == null) {
-            return false;
-        } else if (pos.isString == true) {
-            return true;
-        }
-        return false;
-
+        TrieNode node = startsWith(word);
+        return node == null ? false : node.isWord;
     }
 
-    // Returns if there is any word in the trie
-    // that starts with the given prefix.
-    public boolean startsWith(String prefix) {
-        TrieNode pos = searchWordNodePos(prefix);
-        if (pos == null) {
-            return false;
-        }
-        return true;
-    }
-
-    private TrieNode searchWordNodePos(String s){
-        char[] sArr = s.toCharArray();
+    public TrieNode startsWith(String word) {
         TrieNode curr = root;
-        HashMap<Character, TrieNode> currChildren = curr.children;
 
-        for (char c : sArr) {
-            if (currChildren.containsKey(c)) {
-                curr = currChildren.get(c);
-                currChildren = curr.children;
-            } else {
+        for (char c : word.toCharArray()) {
+            if (!curr.children.containsKey(c)) {
                 return null;
             }
+            curr = curr.children.get(c);
         }
+
         return curr;
     }
 }
+
+class TrieNode {
+    char c;
+    boolean isWord;
+    Map<Character, TrieNode> children = new HashMap<>();
+
+    TrieNode() {}
+
+    TrieNode(char c) {
+        this.c = c;
+    }
+}
 ```
 
-练习题目 | Links | Video  | Note
-:----------|:-----: | :---: | :---:
-(442)Implement Trie | [*LintCode*](http://www.lintcode.com/en/problem/implement-trie/) - [*Solution*](http://www.jiuzhang.com/solutions/implement-trie/) - [*File*](442_implement-trie.java) |  |
-(123)Word Search | [*LintCode*](http://www.lintcode.com/en/problem/word-search/) - [*Solution*](http://www.jiuzhang.com/solutions/word-search/) - [*File*](123_word-search.java) |  |
-(132)Word Search II | [*LintCode*](http://www.lintcode.com/en/problem/word-search-ii/) - [*Solution*](http://www.jiuzhang.com/solutions/word-search-ii/) - [*File*](132_word-search-ii.java) |  |
-(473)Add and Search Word | [*LintCode*](http://www.lintcode.com/en/problem/add-and-search-word/) - [*Solution*](http://www.jiuzhang.com/solutions/add-and-search-word/) - [*File*](473_add-and-search-word.java) |  |
+**题目**
 
-### Sweep Line
-练习题目 | Links | Video  | Note
-:----------|:-----: | :---: | :---:
-(391)Number of Airplanes in the Sky | [*LintCode*](http://www.lintcode.com/en/problem/number-of-airplanes-in-the-sky/) - [*Solution*](http://www.jiuzhang.com/solutions/number-of-airplanes-in-the-sky/) - [*File*](391_number-of-airplanes-in-the-sky.java) |  |
+- Implement Trie
+- Word Search II
+- Add and Search Word
+
+## Sweep-Line 扫描线
+
+**区间拆分**，按“起点”或者“终点”排序
+
+```java
+class Node {
+    int val;
+    int isStart;    // use `int` instead of `boolean` in order to sort by start or end if necessary
+}
+```
+
+例如：区间`[1, 2]`可以拆分为
+`Node(1, 1)` 和 `Node(2, 0)`
+
+当两个区间的`val`相等时，如何排序？ 
+
+- `start` before `end`, or 
+- `end` before `start`?
+
+
+Below is the `Comparator` that sorted by `val` first, then put `end` before `start`
+```java
+class NodeComparator implements Comparator<Node> {
+    @Override
+    public int compare(Node a, Node b) {
+        if (a.val == b.val) {
+            return a.isStart - b.isStart;
+        }
+        return a.val - b.val;
+    }
+}
+```
+
+`Collections.sort(nodes, new NodeComparator());`
+
+
+**题目**
+
+- Number of Airplane in the sky
+- [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)

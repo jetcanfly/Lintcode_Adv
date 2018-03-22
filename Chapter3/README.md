@@ -1,34 +1,123 @@
-# Chapter 3 - Data Structure II
-## Lecture
-- PPT
-[3._data_structure_2_20160602.pptx.pdf](3._data_structure_2_20160602.pptx.pdf)
-- Video https://www.dropbox.com/s/28elxstf0qixkbr/Chaper3_Data_Structure_II.mov?dl=0
+# Chapter 3 数据结构(下)
 
-### Heap
-- O(logN) Push -> Sift Up
-- O(logN) Pop -> Sift Down
-- O(1) Top
-- O(N) Delete / O(logN) for HashHeap
+## Heap
 
-练习题目 | Links | Video  | Note
-:----------|:-----: | :---: | :---:
-(363)Trapping Rain Water | [*LintCode*](http://www.lintcode.com/en/problem/trapping-rain-water/) - [*Solution*](http://www.jiuzhang.com/solutions/trapping-rain-water/) - [*File*](363_trapping-rain-water.java) |  |
-(364)Trapping Rain Water II | [*LintCode*](http://www.lintcode.com/en/problem/trapping-rain-water-ii/) - [*Solution*](http://www.jiuzhang.com/solutions/trapping-rain-water-ii/) - [*File*](364_trapping-rain-water-ii.java) |  |
-(131)Building Outline | [*LintCode*](http://www.lintcode.com/en/problem/building-outline/) - [*Solution*](http://www.jiuzhang.com/solutions/building-outline/) - [*File*](131_building-outline.java) |  | HashHeap支持O(1)删除. 用PQ代替O(n)
-(130)Heapify | [*LintCode*](http://www.lintcode.com/en/problem/heapify/) - [*Solution*](http://www.jiuzhang.com/solutions/heapify/) - [*File*](130_heapify.java) |  | Heap用数组实现。 Parent idx `id`, then Children: `id*2 + 1` and `id*2 + 2`. Children idx `id`, then Parent `(id - 1) / 2`
-(81)Data Stream Median | [*LintCode*](http://www.lintcode.com/en/problem/data-stream-median/) - [*Solution*](http://www.jiuzhang.com/solutions/data-stream-median/) - [*File*](81_data-stream-median.java) |  |
-(360)Sliding Window Median | [*LintCode*](http://www.lintcode.com/en/problem/sliding-window-median/) - [*Solution*](http://www.jiuzhang.com/solutions/sliding-window-median/) - [*File*](360_sliding-window-median.java) |  |
+**`Heap`: 求集合的最大值**
+
+Heap (`PriorityQueue`)
+
+- `O(logn)` push -> shift up
+- `O(logn)` pop -> shift down
+- `O(1)`    top
+- `O(n)`    delete
 
 
-### Deque
-  | First Element (Head)     |                 | Last Element (Tail) |             |
---------|--------------------|-----------------|--------------------|--------------
-        | *Throws exception* | *Special value* | *Throws exception* | *Special value*
-Insert  | `addFirst(e)`      | `offerFirst(e)` | `addLast(e)`       | `offerLast(e)`
-Remove  | `removeFirst()`    | `pollFirst()`   | `removeLast()`     | `pollLast()`
-Examine | `getFirst()`       | `peekFirst()`   | `getLast()`        | `peekLast()`
+HashHeap
 
-练习题目 | Links | Video  | Note
-:----------|:-----: | :---: | :---:
-(391)Sliding Window Maximum | [*LintCode*](http://www.lintcode.com/en/problem/sliding-window-maximum/) - [*Solution*](http://www.jiuzhang.com/solutions/sliding-window-maximum/) - [*File*](362_sliding-window-maximum.java) |  |
-(558)Sliding Window Matrix Maximum | [*LintCode*](http://www.lintcode.com/en/problem/sliding-window-matrix-maximum/) - [*Solution*](http://www.jiuzhang.com/solutions/sliding-window-matrix-maximum/) - [*File*](558_sliding-window-matrix-maximum.java) |  |
+`Hash` + `Heap`
+
+- `O(logn)` delete
+
+
+Heap 实现的原理
+
+`push` 插入：将新元素放到heap[size+1]的位置每次比较它的它父亲元素，如果小于它的父亲，证明现在不满足堆的性质,然后向上Sift Up
+
+```java
+void siftup(int id) {
+    while (parent(id) > -1) {
+        int parentId = parent(id);
+        if (comparesamll(heap.get(parentId), head.get(id)) == true) {
+            break;
+        } else {
+            swap(id, parentId);
+        }
+        id = parentId;
+    }
+}
+```
+
+`pop` 删除：将根节点和最后一个节点进行交换如果该节点大于其中一个儿子，那么将其与其较小的儿子进行交换做Sift Down，直到该节点的儿子均大于它的值，或者它的儿子为空
+
+```java
+void siftdown(int id) {
+    while (lson(id) < heap.size()) {
+        int leftId = lson(id);
+        int rightId = rson(id);
+        int son;
+        if (rightId >= heap.size() || (comparesmall(heap.get(rightId)) == true)) {
+            son = leftId;
+        } else {
+            son = rightId;
+        }
+        if (comparesmall(heap.get(id), heap(get(son)) == true) {
+            swap(id, son);
+        }
+        id = son;
+    }
+}
+```
+
+#### [Trapping Rain Water](http://www.lintcode.com/en/problem/trapping-rain-water/)
+
+#### [Trapping Rain Water II](http://www.lintcode.com/en/problem/trapping-rain-water-ii/)
+矩阵矩阵从外向内遍历技巧
+
+#### [Building Outline](http://www.lintcode.com/en/problem/building-outline/)
+
+#### [Heapify](http://www.lintcode.com/en/problem/heapify/)
+
+#### [Data Stream Median](http://www.lintcode.com/en/problem/data-stream-median/)
+
+#### [Sliding Window Median](http://www.lintcode.com/en/problem/sliding-window-median/)
+
+- 中位数怎么想到用堆`Heap`
+
+```
+          median
+          /     \
+         /       \
+ maxHeap           minHeap
+(size: n)      (size: n, n+1)
+
+```
+
+- 窗口操作怎么分解
+  1. 左边删除一个元素
+  2. 右边增加一个元素
+  
+  
+
+## Deque
+
+**`Deque`: 两端都会有`push`和`pop`**
+
+`Deque<String> deque = new ArrayDeque<String>();  `
+
+
+**Summary of Deque methods**
+
+|               | **First Element (Head)**   |                 | **Last Element (Tail)**   |               |
+| ------------: | :------------------------: |:---------------:| :------------------------:| :-----------: |
+|               | Throws exception           | Special value   | Throws exception          | Special value |
+| **Insert**    | `addFirst(e)`              | `offerFirst(e)` | `addLast(e)`              | `offerLast(e)`|
+| **Remove**    | `removeFirst()`            | `pollFirst()`   | `removeLast()`            | `pollLast()`  |
+| **Examine**   | `getFirst()`               | `peekFirst()`   | `getLast()`               | `peekLast()`  |
+
+
+#### [Sliding Window Maximum](http://www.lintcode.com/en/problem/sliding-window-maximum/)
+
+- Method 1: for loop `O(nk)`
+- Method 2: Balancing Binary Search Tree or Heap: `O(nlog(k))`
+  1. get max
+  2. delete element
+  3. insert element
+- Method 3: Deque `O(n)`
+  1. pop and push at front
+  2. pop at end
+
+    
+#### Sliding Window Matrix Maximum
+
+Sliding Window Maximum + sub array Sum
+

@@ -52,14 +52,11 @@ public class WordDictionary {
         if (root.children.containsKey(c)) {
             return search(word, root.children.get(c), start + 1);
         } else if (c == '.') {
-            boolean ans = false;
             for (char key : root.children.keySet()) {
                 if (search(word, root.children.get(key), start + 1)) {
-                    ans = true;
-                    break;
+                    return true;
                 }
             }
-            return ans;
         }
         return false;
     }

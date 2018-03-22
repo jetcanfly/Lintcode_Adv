@@ -51,10 +51,8 @@ public class Trie {
         TrieNode pos = searchWordNodePos(word);
         if (pos == null) {
             return false;
-        } else if (pos.isString == true) {
-            return true;
         }
-        return false;
+        return pos.isString;
 
     }
 
@@ -62,10 +60,7 @@ public class Trie {
     // that starts with the given prefix.
     public boolean startsWith(String prefix) {
         TrieNode pos = searchWordNodePos(prefix);
-        if (pos == null) {
-            return false;
-        }
-        return true;
+        return pos != null;
     }
 
     private TrieNode searchWordNodePos(String s){
